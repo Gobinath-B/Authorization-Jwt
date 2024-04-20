@@ -2,7 +2,7 @@ require('dotenv').config()
 const { error } = require('console');
 const express = require('express');
 const app = express();
-const port = 5000;
+const port = process.env.PORT;
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -53,8 +53,35 @@ mongoose.connect(connectionUrl)
 
 const User =  mongoose.model("User",userSchema);
 
+app.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
 
-app.get('/login', Authenticate, async (req, res) => {
+        const user = await User.findOne({ username });
+
+        
+        if (!user || user.password !== password) {
+           
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+
+        
+        const userPayload = { username: user.username }; 
+        const accessToken = jwt.sign(userPayload, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: '24h' 
+        });
+
+        
+        res.json({ accessToken });
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
+app.get('/post', Authenticate, async (req, res) => {
     try {
         console.log("user",req.user);
         const user = await User.findOne({ username: req.user.username });
