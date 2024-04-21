@@ -53,6 +53,10 @@ mongoose.connect(connectionUrl)
 
 const User =  mongoose.model("User",userSchema);
 
+app.get("/", (req,res)=>{
+res.send("Backend Server Working")
+});
+
 app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
