@@ -72,7 +72,7 @@ app.post('/login', async (req, res) => {
         });
 
         
-        res.json({ accessToken });
+        res.json({accessToken: accessToken,username: user.username });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Internal server error' });
